@@ -1,0 +1,10 @@
+[package]
+name = "typos"
+version = "0.1.0"
+authors = ["Adrien Peronnet <adrien@vendhq.com>"]
+edition = "2018"
+
+[dependencies]
+pathfinding = "^1.1.12"
+clap = "^2.33.0"
+edit-distance = "^2.1.0"
