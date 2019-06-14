@@ -16,7 +16,7 @@ pub fn find_shortest_path<'a>(
     stop: &str,
     words: &'a [&str],
     algorithm: &PathFindingAlgorithm,
-) -> Option<(Vec<&'a str>, path::PathMultiCost<usize>)> {
+) -> Option<(Vec<&'a str>, path::PathMultiCost<word::EditDistance>)> {
     let get_successors = |&current_word: &&'a str| {
         words
             .iter()
@@ -158,7 +158,7 @@ mod tests {
         start: &str,
         stop: &'a str,
         mut words: Vec<&'a str>,
-        expected: (Vec<&str>, Vec<(usize, usize)>),
+        expected: (Vec<&str>, Vec<(word::EditDistance, usize)>),
     ) {
         words.insert(0, stop);
         let (expected_path, expected_cost) = expected;
@@ -168,15 +168,15 @@ mod tests {
             PathFindingAlgorithm::Idastar,
             PathFindingAlgorithm::Dijkstra,
         ]
-        .iter()
-        .for_each(
-            |alg| match find_shortest_path(start, stop, words.as_slice(), alg) {
-                Some((path, cost)) => {
-                    assert_eq!(path, expected_path);
-                    assert_eq!(cost.get_cost(), expected_cost);
-                }
-                None => panic!("no path found"),
-            },
-        )
+            .iter()
+            .for_each(
+                |alg| match find_shortest_path(start, stop, words.as_slice(), alg) {
+                    Some((path, cost)) => {
+                        assert_eq!(path, expected_path);
+                        assert_eq!(cost.get_cost(), expected_cost);
+                    }
+                    None => panic!("no path found"),
+                },
+            )
     }
 }

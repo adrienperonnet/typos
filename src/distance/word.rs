@@ -4,18 +4,20 @@ use crate::distance::path::{PathMultiCost, MAX_DIMENSION};
 use pathfinding::num_traits::Bounded;
 use std::cmp::min;
 
+pub type EditDistance = u8;
+
 //This method returns a Path with ordering and additivity properties
 //This is not a distance since it does not respect the triangular inequality
-pub fn path_cost(w1: &str, w2: &str) -> PathMultiCost<usize> {
+pub fn path_cost(w1: &str, w2: &str) -> PathMultiCost<EditDistance> {
     match edit_distance::edit_distance(w1, w2) {
-        0 => PathMultiCost::<usize>::min_value(),
-        n => PathMultiCost::new(1, min(n, MAX_DIMENSION) - 1),
+        0 => PathMultiCost::<EditDistance>::min_value(),
+        n => PathMultiCost::new(1 as EditDistance, min(n, MAX_DIMENSION) - 1),
     }
 }
 
-pub fn edit_distance(w1: &str, w2: &str) -> PathMultiCost<usize> {
+pub fn edit_distance(w1: &str, w2: &str) -> PathMultiCost<EditDistance> {
     PathMultiCost::new(
-        min(edit_distance::edit_distance(w1, w2), MAX_DIMENSION - 1),
+        edit_distance::edit_distance(w1, w2) as EditDistance,
         0,
     )
 }
