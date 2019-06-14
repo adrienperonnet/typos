@@ -5,8 +5,8 @@ use std::str::FromStr;
 
 mod distance;
 
-use crate::distance::PathFindingAlorithm;
-use crate::distance::PathFindingAlorithm::{Astar, Dijkstra, Fringe, Idastar};
+use crate::distance::PathFindingAlgorithm;
+use crate::distance::PathFindingAlgorithm::{Astar, Dijkstra, Fringe, Idastar};
 use core::borrow::Borrow;
 use std::time::Instant;
 use std::{
@@ -73,7 +73,7 @@ fn main() {
     let stop = stop.as_str();
     let algorithm = matches
         .value_of("ALGORITHM")
-        .map(PathFindingAlorithm::from_str)
+        .map(PathFindingAlgorithm::from_str)
         .unwrap()
         .unwrap();
 

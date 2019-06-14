@@ -15,7 +15,7 @@ pub fn find_shortest_path<'a>(
     start: &'a str,
     stop: &str,
     words: &'a [&str],
-    algorithm: &PathFindingAlorithm,
+    algorithm: &PathFindingAlgorithm,
 ) -> Option<(Vec<&'a str>, path::PathMultiCost<usize>)> {
     let get_successors = |&current_word: &&'a str| {
         words
@@ -24,50 +24,52 @@ pub fn find_shortest_path<'a>(
     };
 
     let heuristic = |word: &&str| word::edit_distance(word, stop);
-    let stop_condition = |word: &&str| word == &stop;
+    let stop_condition = |word: &&str| *word == stop;
     match algorithm {
-        PathFindingAlorithm::Astar => {
+        PathFindingAlgorithm::Astar => {
             astar::astar(&start, get_successors, heuristic, stop_condition)
         }
-        PathFindingAlorithm::Idastar => {
+        PathFindingAlgorithm::Idastar => {
             idastar::idastar(&start, get_successors, heuristic, stop_condition)
         }
-        PathFindingAlorithm::Fringe => {
+        PathFindingAlgorithm::Fringe => {
             fringe::fringe(&start, get_successors, heuristic, stop_condition)
         }
-        PathFindingAlorithm::Dijkstra => dijkstra::dijkstra(&start, get_successors, stop_condition),
+        PathFindingAlgorithm::Dijkstra => {
+            dijkstra::dijkstra(&start, get_successors, stop_condition)
+        }
     }
 }
 
 /// Pathfinding algorithm supported
-pub enum PathFindingAlorithm {
+pub enum PathFindingAlgorithm {
     Astar,
     Fringe,
     Idastar,
     Dijkstra,
 }
 
-impl fmt::Display for PathFindingAlorithm {
+impl fmt::Display for PathFindingAlgorithm {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let name = match self {
-            PathFindingAlorithm::Astar => "astar",
-            PathFindingAlorithm::Fringe => "fringe",
-            PathFindingAlorithm::Idastar => "idastar",
-            PathFindingAlorithm::Dijkstra => "dijkstra",
+            PathFindingAlgorithm::Astar => "astar",
+            PathFindingAlgorithm::Fringe => "fringe",
+            PathFindingAlgorithm::Idastar => "idastar",
+            PathFindingAlgorithm::Dijkstra => "dijkstra",
         };
         write!(f, "{}", name)
     }
 }
 
-impl FromStr for PathFindingAlorithm {
+impl FromStr for PathFindingAlgorithm {
     type Err = ();
 
-    fn from_str(s: &str) -> Result<PathFindingAlorithm, ()> {
+    fn from_str(s: &str) -> Result<PathFindingAlgorithm, ()> {
         match s {
-            "astar" => Ok(PathFindingAlorithm::Astar),
-            "fringe" => Ok(PathFindingAlorithm::Fringe),
-            "idastar" => Ok(PathFindingAlorithm::Idastar),
-            "dijkstra" => Ok(PathFindingAlorithm::Dijkstra),
+            "astar" => Ok(PathFindingAlgorithm::Astar),
+            "fringe" => Ok(PathFindingAlgorithm::Fringe),
+            "idastar" => Ok(PathFindingAlgorithm::Idastar),
+            "dijkstra" => Ok(PathFindingAlgorithm::Dijkstra),
             _ => Err(()),
         }
     }
@@ -161,10 +163,10 @@ mod tests {
         words.insert(0, stop);
         let (expected_path, expected_cost) = expected;
         [
-            PathFindingAlorithm::Astar,
-            PathFindingAlorithm::Fringe,
-            PathFindingAlorithm::Idastar,
-            PathFindingAlorithm::Dijkstra,
+            PathFindingAlgorithm::Astar,
+            PathFindingAlgorithm::Fringe,
+            PathFindingAlgorithm::Idastar,
+            PathFindingAlgorithm::Dijkstra,
         ]
         .iter()
         .for_each(
