@@ -13,7 +13,7 @@ mod word;
 
 pub fn find_shortest_path<'a>(
     start: &'a str,
-    stop: &'a str,
+    stop: &str,
     words: &'a [&str],
     algorithm: &PathFindingAlorithm,
 ) -> Option<(Vec<&'a str>, path::PathMultiCost<usize>)> {
