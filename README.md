@@ -1,5 +1,6 @@
 # Context
-(This tweet|https://twitter.com/dgryski/status/1125922800877883393) made me build this tool.
+
+[This tweet](https://twitter.com/dgryski/status/1125922800877883393) made me build this tool.
 
 # Description
 Compute the shortest distance between two words of a given set.
@@ -23,7 +24,7 @@ Shortest path found in 121.622294335s: adrien->adriel->ariel->mariel->marie->max
 ```
 
 So, in practice, if you want to change a plane ticket from:
-- Adrien to Pierre you'll have to make 9 phone calls to claim for a typo in your firstname
+- Adrien to Pierre you'll have to make 9 phone calls to claim for a typo in your first name
 - Adrien to Maxime you'll have to make 11 phone calls to claim for a typo. 2 of those phone calls might be harder because they required a 2-letters change.
 
 
