@@ -91,7 +91,7 @@ fn main() {
 
     let words: Vec<&str> = words.iter().map(AsRef::as_ref).collect();
 
-    let word_count = words.len() + 1;
+    let word_count = words.len();
 
     println!("{} words loaded into memory", word_count);
     let start_time = Instant::now();
