@@ -142,8 +142,6 @@ mod tests {
     #[test]
     fn ordering_prefer_high_dimension() {
         assert!(cost([0, 0, 2]) > cost([0, 0, 1]));
-        dbg!(cost([0, 2, 0]));
-        dbg!(cost([0, 0, 5]));
         assert!(cost([0, 2, 0]) > cost([0, 0, 5]));
         assert!(cost([3, 0, 0]) > cost([2, 71, 88]));
     }
