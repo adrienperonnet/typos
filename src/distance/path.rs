@@ -112,6 +112,12 @@ mod tests {
     }
 
     #[test]
+    fn equality() {
+        assert_ne!(cost([1, 2, 3]), cost([0, 1, 0]));
+        assert_eq!(cost([0, 1, 0]), cost([0, 1, 0]));
+    }
+
+    #[test]
     fn zero_identity_element() {
         assert_eq!(PathMultiCost::zero() + cost([1, 2, 3]), cost([1, 2, 3]));
     }
