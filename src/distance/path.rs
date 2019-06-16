@@ -1,4 +1,4 @@
-use pathfinding::num_traits::{Bounded, Zero};
+use num_traits::{Bounded, Zero};
 use std::cmp::{min, Ord, Ordering};
 use std::ops::{Add, AddAssign};
 

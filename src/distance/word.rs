@@ -1,7 +1,7 @@
 extern crate edit_distance;
 
 use crate::distance::path::{PathMultiCost, MAX_DIMENSION};
-use pathfinding::num_traits::Bounded;
+use num_traits::Bounded;
 use std::cmp::min;
 
 pub type EditDistance = u8;

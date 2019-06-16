@@ -3,7 +3,7 @@ use pathfinding::directed::astar;
 use pathfinding::directed::dijkstra;
 use pathfinding::directed::fringe;
 use pathfinding::directed::idastar;
-use pathfinding::num_traits::Zero;
+use num_traits::Zero;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
