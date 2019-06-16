@@ -25,6 +25,7 @@ pub fn find_shortest_path<'a>(
 
     let heuristic = |word: &&str| word::edit_distance(word, stop);
     let stop_condition = |word: &&str| *word == stop;
+    debug_assert!(stop_condition(&stop), "Stopping condition does not work");
     match algorithm {
         PathFindingAlgorithm::Astar => {
             astar::astar(&start, get_successors, heuristic, stop_condition)
