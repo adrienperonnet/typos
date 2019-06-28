@@ -1,4 +1,4 @@
-use num_traits::{Bounded, Zero};
+use num_traits::{Bounded, Zero, CheckedAdd};
 use std::cmp::{min, Ord, Ordering};
 use std::ops::{Add, AddAssign};
 
@@ -67,22 +67,25 @@ impl<U: PartialOrd> PartialOrd for PathMultiCost<U> {
     }
 }
 
-impl<U: Zero + Copy + AddAssign> Add for PathMultiCost<U> {
+impl<U: Zero + Copy + CheckedAdd + Bounded> Add for PathMultiCost<U> {
     type Output = PathMultiCost<U>;
 
     fn add(self, rhs: PathMultiCost<U>) -> Self::Output
-    where
-        U: Add,
+        where
+            U: CheckedAdd,
     {
         let mut array = self.data;
         rhs.data.iter().enumerate().for_each(|(i, e)| {
-            array[i] += *e;
+            match e.checked_add(&array[i]) {
+                None => array[i] = U::max_value(),
+                Some(s) => array[i] = s
+            }
         });
         return PathMultiCost::<U> { data: array };
     }
 }
 
-impl<U: Zero + Copy + AddAssign> Zero for PathMultiCost<U> {
+impl<U: Zero + Copy + Bounded + CheckedAdd> Zero for PathMultiCost<U> {
     fn zero() -> Self {
         return PathMultiCost::new(U::zero(), 0);
     }
