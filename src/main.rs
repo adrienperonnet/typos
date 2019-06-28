@@ -97,11 +97,14 @@ fn main() {
     let start_time = Instant::now();
     let res = distance::find_shortest_path(start, stop, words.as_slice(), algorithm.borrow());
     let duration = start_time.elapsed();
-    match res.map(|(p, d)| (p.join("->"), d)) {
-        Some((words, cost)) => println!(
-            "Shortest path found in {:?}: {} (achieved in {})",
-            duration, words, cost
-        ),
+    match res {
+        Some((words, cost)) => {
+            let words = words.join("->");
+            println!(
+                "Shortest path found in {:?}: {} (achieved in {})",
+                duration, words, cost
+            )
+        },
         None => println!("No path found, something went wrong ?"),
     }
 }
