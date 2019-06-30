@@ -103,70 +103,75 @@ mod tests {
 
     #[test]
     fn test_get_cost() {
-        assert_eq!(cost([0, 5, 3]).get_cost(), vec![(5, 2), (3, 1)]);
-        assert_eq!(cost([1, 5, 3]).get_cost(), vec![(1, 3), (5, 2), (3, 1)])
+        assert_eq!(cost(&[2]).get_cost(), vec![(2, 1)]);
+        assert_eq!(cost(&[5, 3]).get_cost(), vec![(5, 2), (3, 1)]);
+        assert_eq!(cost(&[1, 5, 3]).get_cost(), vec![(1, 3), (5, 2), (3, 1)])
     }
 
     #[test]
     fn zero() {
-        assert!(cost([0, 0, 0]).is_zero());
-        assert!(!cost([0, 1, 0]).is_zero());
-        assert!(!cost([1, 2, 3]).is_zero());
+        assert!(cost(&[0, 0, 0, 0, 0]).is_zero());
+        assert!(!cost(&[0, 1, 0]).is_zero());
+        assert!(!cost(&[1, 2, 3]).is_zero());
     }
 
     #[test]
     fn equality() {
-        assert_ne!(cost([1, 2, 3]), cost([0, 1, 0]));
-        assert_eq!(cost([0, 1, 0]), cost([0, 1, 0]));
+        assert_ne!(cost(&[1, 2, 3]), cost(&[0, 1, 0]));
+        assert_eq!(cost(&[0, 1, 0]), cost(&[0, 1, 0]));
+        assert_eq!(cost(&[1, 0]), cost(&[0, 0, 0, 1, 0]));
     }
 
     #[test]
     fn zero_identity_element() {
-        assert_eq!(PathMultiCost::zero() + cost([1, 2, 3]), cost([1, 2, 3]));
+        assert_eq!(PathMultiCost::zero() + cost(&[1, 2, 3]), cost(&[1, 2, 3]));
     }
 
     #[test]
     fn sum_commutative() {
         assert_eq!(
-            cost([1, 2, 3]) + cost([4, 5, 6]),
-            cost([4, 5, 6]) + cost([1, 2, 3])
+            cost(&[1, 2, 3]) + cost(&[4, 5, 6]),
+            cost(&[4, 5, 6]) + cost(&[1, 2, 3])
         );
     }
 
     #[test]
     fn sum_associative() {
         assert_eq!(
-            cost([1, 2, 3]) + (cost([4, 5, 6]) + cost([0, 1, 2])),
-            (cost([1, 2, 3]) + cost([4, 5, 6])) + cost([0, 1, 2])
+            cost(&[1, 2, 3]) + (cost(&[4, 5, 6]) + cost(&[0, 1, 2])),
+            (cost(&[1, 2, 3]) + cost(&[4, 5, 6])) + cost(&[0, 1, 2])
         );
     }
 
     #[test]
     fn sum() {
-        assert_eq!(cost([0, 0, 1]) + cost([0, 0, 2]), cost([0, 0, 3]));
-        assert_eq!(cost([0, 1, 0]) + cost([0, 5, 0]), cost([0, 6, 0]));
-        assert_eq!(cost([1, 2, 3]) + cost([3, 2, 1]), cost([4, 4, 4]));
+        assert_eq!(cost(&[0, 0, 1]) + cost(&[0, 0, 2]), cost(&[0, 0, 3]));
+        assert_eq!(cost(&[0, 1, 0]) + cost(&[0, 5, 0]), cost(&[0, 6, 0]));
+        assert_eq!(cost(&[1, 2, 3]) + cost(&[3, 2, 1]), cost(&[4, 4, 4]));
     }
 
     #[test]
     fn ordering_prefer_high_dimension() {
-        assert!(cost([0, 0, 2]) > cost([0, 0, 1]));
-        assert!(cost([0, 2, 0]) > cost([0, 0, 5]));
-        assert!(cost([3, 0, 0]) > cost([2, 71, 88]));
+        assert!(cost(&[0, 0, 2]) > cost(&[0, 0, 1]));
+        assert!(cost(&[0, 2, 0]) > cost(&[0, 0, 5]));
+        assert!(cost(&[3, 0, 0]) > cost(&[2, 71, 88]));
     }
 
     #[test]
     fn subadditivity() {
         //f(x+y)<=f(x)+f(y)
-        assert!(cost([3, 5, 4]) <= cost([2, 5, 4]) + cost([1, 5, 4]));
-        assert!(cost([3, 5, 4]) <= cost([2, 3, 1]) + cost([1, 2, 3]));
+        assert!(cost(&[3, 5, 4]) <= cost(&[2, 5, 4]) + cost(&[1, 5, 4]));
+        assert!(cost(&[3, 5, 4]) <= cost(&[2, 3, 1]) + cost(&[1, 2, 3]));
     }
 
-    fn cost(input: [i32; 3]) -> PathMultiCost<i32> {
+    }
+
+    fn cost(input: &[u8]) -> PathMultiCost<u8> {
         let mut data = [0; MAX_DIMENSION];
-        data[MAX_DIMENSION - 1] = input[2];
-        data[MAX_DIMENSION - 2] = input[1];
-        data[MAX_DIMENSION - 3] = input[0];
+        input
+            .iter()
+            .enumerate()
+            .for_each(|(i, inp)| (data[MAX_DIMENSION - i - 1] = input[input.len() - i - 1]));
         return PathMultiCost { data };
     }
 }
