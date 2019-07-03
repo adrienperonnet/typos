@@ -2,7 +2,6 @@ use num_traits::{Bounded, CheckedAdd, Zero};
 use std::cmp::{min, Ord, Ordering};
 use std::ops::Add;
 
-
 /*
 In order to derive the Copy trait required by pathfinding api we use fixed size array for storage
 Increasing this value with increase the memory required by the program but will support more hops.
@@ -72,8 +71,8 @@ impl<U: Zero + Copy + CheckedAdd + Bounded> Add for PathMultiCost<U> {
     type Output = PathMultiCost<U>;
 
     fn add(self, rhs: PathMultiCost<U>) -> Self::Output
-        where
-            U: CheckedAdd,
+    where
+        U: CheckedAdd,
     {
         let mut array = self.data;
         rhs.data
@@ -166,8 +165,8 @@ mod tests {
 
     extern crate quickcheck;
 
-    use quickcheck::quickcheck;
     use quickcheck::empty_shrinker;
+    use quickcheck::quickcheck;
 
     impl<U: quickcheck::Arbitrary + Copy + Zero> quickcheck::Arbitrary for PathMultiCost<U> {
         fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> PathMultiCost<U> {
@@ -179,7 +178,7 @@ mod tests {
             return PathMultiCost { data: array };
         }
 
-        fn shrink(&self) -> Box<Iterator<Item=Self>> {
+        fn shrink(&self) -> Box<Iterator<Item = Self>> {
             return empty_shrinker();
         }
     }
