@@ -104,7 +104,7 @@ fn main() {
                 "Shortest path found in {:?}: {} (achieved in {})",
                 duration, words, cost
             )
-        },
+        }
         None => println!("No path found, something went wrong ?"),
     }
 }

@@ -1,6 +1,7 @@
-use num_traits::{Bounded, Zero, CheckedAdd};
+use num_traits::{Bounded, CheckedAdd, Zero};
 use std::cmp::{min, Ord, Ordering};
-use std::ops::{Add, AddAssign};
+use std::ops::Add;
+
 
 /*
 In order to derive the Copy trait required by pathfinding api we use fixed size array for storage
@@ -75,12 +76,13 @@ impl<U: Zero + Copy + CheckedAdd + Bounded> Add for PathMultiCost<U> {
             U: CheckedAdd,
     {
         let mut array = self.data;
-        rhs.data.iter().enumerate().for_each(|(i, e)| {
-            match e.checked_add(&array[i]) {
+        rhs.data
+            .iter()
+            .enumerate()
+            .for_each(|(i, e)| match e.checked_add(&array[i]) {
                 None => array[i] = U::max_value(),
-                Some(s) => array[i] = s
-            }
-        });
+                Some(s) => array[i] = s,
+            });
         return PathMultiCost::<U> { data: array };
     }
 }
@@ -99,8 +101,6 @@ impl<U: Zero + Copy + Bounded + CheckedAdd> Zero for PathMultiCost<U> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn test_get_cost() {
         assert_eq!(cost(&[2]).get_cost(), vec![(2, 1)]);
@@ -145,8 +145,8 @@ mod tests {
 
     #[test]
     fn sum() {
-        assert_eq!(cost(&[0, 0, 1]) + cost(&[0, 0, 2]), cost(&[0, 0, 3]));
-        assert_eq!(cost(&[0, 1, 0]) + cost(&[0, 5, 0]), cost(&[0, 6, 0]));
+        assert_eq!(cost(&[1]) + cost(&[2]), cost(&[3]));
+        assert_eq!(cost(&[1, 0]) + cost(&[5, 0]), cost(&[6, 0]));
         assert_eq!(cost(&[1, 2, 3]) + cost(&[3, 2, 1]), cost(&[4, 4, 4]));
     }
 
@@ -164,6 +164,76 @@ mod tests {
         assert!(cost(&[3, 5, 4]) <= cost(&[2, 3, 1]) + cost(&[1, 2, 3]));
     }
 
+    extern crate quickcheck;
+
+    use quickcheck::quickcheck;
+    use quickcheck::empty_shrinker;
+
+    impl<U: quickcheck::Arbitrary + Copy + Zero> quickcheck::Arbitrary for PathMultiCost<U> {
+        fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> PathMultiCost<U> {
+            let input: Vec<U> = quickcheck::Arbitrary::arbitrary(g);
+            let mut array = [U::zero(); MAX_DIMENSION];
+            for (i, u) in input.iter().take(MAX_DIMENSION).enumerate() {
+                array[i] = *u;
+            }
+            return PathMultiCost { data: array };
+        }
+
+        fn shrink(&self) -> Box<Iterator<Item=Self>> {
+            return empty_shrinker();
+        }
+    }
+
+    use super::*;
+
+    quickcheck! {
+        //Add some property-based testing on
+        fn equal_function_prop(a: PathMultiCost<u8>) -> bool {
+            a == a
+        }
+
+        //Check monoid properties (totality,identity,associativity)
+        fn sum_zero_prop(a: PathMultiCost<u8>, b: PathMultiCost<u8>) -> bool {
+            b == PathMultiCost::zero() || a + b != a
+        }
+
+        fn sum_add_zero_prop(a: PathMultiCost<u8>) -> bool {
+            a + PathMultiCost::zero() == a
+        }
+
+        fn sum_associative_prop(a: PathMultiCost<u8>, b: PathMultiCost<u8>, c: PathMultiCost<u8>) -> bool {
+            a + (b + c) == (a + b) + c
+        }
+
+        fn sum_commutative_prop(a: PathMultiCost<u8>, b: PathMultiCost<u8>) -> bool {
+            a + b == b + a
+        }
+
+        fn bounded_prop(a: PathMultiCost<u8>) -> bool {
+            a >= PathMultiCost::min_value() && a <= PathMultiCost::max_value()
+        }
+
+        //triangle inequality
+        fn subadditivity_prop(a: u8, b: u8, c: u8, y: u8) -> bool {
+            //f(x+y)<=f(x)+f(y)
+            cost(&[a + y, b, c]) <= cost(&[a, b, c]) + cost(&[y, 0, 0]) &&
+                cost(&[a, b + y, c]) <= cost(&[a, b, c]) + cost(&[0, y, 0]) &&
+                cost(&[a, b, c + y]) <= cost(&[a, b, c]) + cost(&[0, 0, y]) &&
+                cost(&[a + y, b + y, c + y]) <= cost(&[a, b, c]) + cost(&[y, y, y])
+        }
+
+        //total ordering
+        fn antisymmetry_prop(a: PathMultiCost<u8>, b: PathMultiCost<u8>) -> bool {
+            if a >= b && a <= b { a == b } else { true }
+        }
+
+        fn transitivity_prop(a: PathMultiCost<u8>, b: PathMultiCost<u8>, c: PathMultiCost<u8>) -> bool {
+            if a <= b && b <= c { a <= c } else { true }
+        }
+
+        fn connexity_prop(a: PathMultiCost<u8>, b: PathMultiCost<u8>) -> bool {
+            a <= b || b <= a
+        }
     }
 
     fn cost(input: &[u8]) -> PathMultiCost<u8> {
@@ -171,7 +241,7 @@ mod tests {
         input
             .iter()
             .enumerate()
-            .for_each(|(i, inp)| (data[MAX_DIMENSION - i - 1] = input[input.len() - i - 1]));
+            .for_each(|(i, _)| (data[MAX_DIMENSION - i - 1] = input[input.len() - i - 1]));
         return PathMultiCost { data };
     }
 }

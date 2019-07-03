@@ -16,10 +16,7 @@ pub fn path_cost(w1: &str, w2: &str) -> PathMultiCost<EditDistance> {
 }
 
 pub fn edit_distance(w1: &str, w2: &str) -> PathMultiCost<EditDistance> {
-    PathMultiCost::new(
-        edit_distance::edit_distance(w1, w2) as EditDistance,
-        0,
-    )
+    PathMultiCost::new(edit_distance::edit_distance(w1, w2) as EditDistance, 0)
 }
 
 #[cfg(test)]
