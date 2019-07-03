@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/adrienperonnet/typos.svg?branch=master)](https://travis-ci.org/adrienperonnet/typos)
+
 # Context
 
 [This tweet](https://twitter.com/dgryski/status/1125922800877883393) made me build this tool.
