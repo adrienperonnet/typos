@@ -32,4 +32,17 @@ mod tests {
             path_cost("adrien", "adri") + path_cost("adri", "adr") < path_cost("adrien", "adr")
         );
     }
+
+    extern crate quickcheck;
+    use quickcheck::quickcheck;
+
+    quickcheck! {
+        //Add some property-based testing on
+        fn triangular_innequality_prop(a: String, b: String, c: String) -> bool {
+            edit_distance(&a, &b) + edit_distance(&b, &c) >= edit_distance(&a, &c)
+        }
+        fn heuristic_prop(a: String, b: String) -> bool {
+            path_cost(&a, &b) >= edit_distance(&a, &b)
+        }
+    }
 }
