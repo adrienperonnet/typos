@@ -239,8 +239,19 @@ mod tests {
             if a <= b && b <= c { a <= c } else { true }
         }
 
+        //total
         fn connexity_prop(a: PathMultiCost<u8>, b: PathMultiCost<u8>) -> bool {
             a <= b || b <= a
+        }
+
+        //reflexity
+         fn reflexity_prop(a: PathMultiCost<u8>) -> bool {
+            a <= a
+        }
+
+        //PathMultiCost<u8> is isotone
+         fn isotone_prop(a: PathMultiCost<u8>, b: PathMultiCost<u8>, c: PathMultiCost<u8>) -> bool {
+            if a <= b {a + c <= b + c && c + a <= c + b } else {true}
         }
     }
 
