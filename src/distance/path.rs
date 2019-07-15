@@ -168,18 +168,27 @@ mod tests {
     use quickcheck::empty_shrinker;
     use quickcheck::quickcheck;
 
-    impl<U: quickcheck::Arbitrary + Copy + Zero> quickcheck::Arbitrary for PathMultiCost<U> {
+    fn from_vec<U: Zero + Copy>(v: Vec<U>) -> PathMultiCost<U> {
+        let mut array = [U::zero(); MAX_DIMENSION];
+        v.iter().take(MAX_DIMENSION).enumerate().for_each(|(i, u)| {
+            array[i] = *u;
+        });
+        return PathMultiCost { data: array };
+    }
+
+    impl<U: quickcheck::Arbitrary + Copy + Zero + Copy + Bounded + CheckedAdd> quickcheck::Arbitrary
+        for PathMultiCost<U>
+    {
         fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> PathMultiCost<U> {
             let input: Vec<U> = quickcheck::Arbitrary::arbitrary(g);
-            let mut array = [U::zero(); MAX_DIMENSION];
-            for (i, u) in input.iter().take(MAX_DIMENSION).enumerate() {
-                array[i] = *u;
-            }
-            return PathMultiCost { data: array };
+            return from_vec(input);
         }
 
         fn shrink(&self) -> Box<Iterator<Item = Self>> {
-            return empty_shrinker();
+            match self.is_zero() {
+                true => empty_shrinker(),
+                false => Box::new(self.data.to_vec().shrink().map(from_vec)),
+            }
         }
     }
 
